@@ -1,6 +1,6 @@
 
 
-**## Overview**
+## Overview
 
 This project is part of the Udacity Azure ML Nanodegree.
 
@@ -10,7 +10,7 @@ This model is then compared to an Azure AutoML run.
 
 
 
-**## Summary**
+## Summary
 
 The [dataset](https://www.kaggle.com/henriqueyamahata/bank-marketing) deals with direct marketing campaigns of a bank. This is a classification problem to predict if the client will subscribe to a term deposit or not. 
 
@@ -18,18 +18,18 @@ The best model to predict this outcome has been identified using AutoML (as supp
 
 ![](images/udacity-overview-optimize.png)
 
-**## Scikit-learn Pipeline**
+## Scikit-learn Pipeline
 
-***\*Explain the pipeline architecture, including data, hyperparameter tuning, and classification algorithm.\****
+*\*Explain the pipeline architecture, including data, hyperparameter tuning, and classification algorithm.\*
 
-
+First we create a workspace from config and define a compute target to execute the sci-kit learn script (train.py), for which a starting template was provided. In this training script, we run a logistic regression with inverse regularization (`C`) and maximum iterations (`max_iter`) as hyperparameters. The data is cleaned with one-hot encoder and other categorical transformations with lambda functions to gold format for sklearn's logistic regression training. In addition, the train and test datasets are split 80-20. The hyperparameters are randomly sampled and passed to the method in train.py during hyperdrive executions. The one that yields the most accuracy is chosen as the optimized hyperparameter settings, which, in this case has a `C` value of `1.4120987698738543` and `max_iter` of `100` , resulting in an accuracy of `91.1%`. 
 
 ***\*What are the benefits of the parameter sampler you chose?\****
-
+Random sampling over a hyperparameter search space supports discrete and continuous hyperparameters, and I have tried both but ended up with `loguniform`. It also allows early termination of low-performance runs. It's faster and optimal than grid and bayesian and can be used as an initial heuristic to get good metrics. 
 
 
 ***\*What are the benefits of the early stopping policy you chose?\****
-
+This allows efficient usage of cloud resources and is a cost-efficient way to eliminate low-performance runs to use up compute costs. We used Bandit policy, which uses slack factor and evaluation interval. Bandit ends runs when the primary metric isn't within the specified slack factor of the most successful run, which in our case is: `{"evaluation_interval":1,"delay_evaluation":0,"slack_factor":0.1}`
 
 
 **## AutoML**

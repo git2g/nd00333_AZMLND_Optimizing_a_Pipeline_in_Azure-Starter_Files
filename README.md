@@ -32,6 +32,8 @@ Random sampling over a hyperparameter search space supports discrete and continu
 *\*What are the benefits of the early stopping policy you chose?\*
 This allows efficient usage of cloud resources and is a cost-efficient way to eliminate low-performance runs to use up compute costs. We used Bandit policy, which uses slack factor and evaluation interval. Bandit ends runs when the primary metric isn't within the specified slack factor of the most successful run, which in our case is: `{"evaluation_interval":1,"delay_evaluation":0,"slack_factor":0.1}`
 
+Bandit Policy is a more aggressive savings policy than other termination policies as it has a smaller allowable slack. This elastic nature is a good option for cloud-based ml work as it optimizes the costs, which is otherwise impossible to acheive. And since cloud costs are usage based, it's very important to pick an aggressive termination policy like Bandit. 
+
 
 ## AutoML
 
@@ -40,6 +42,11 @@ AutoML definitely took more compute resources and performed a more exhaustive se
 ![](images/udacity-overview-optimize-3.png)
 ![](images/udacity-overview-optimize-4.png)
 
+Some of the guardrails that it used was around training time, which was set to 0.5 hours, and metric score threshold, which was set to 0.99 for exit criterion. In addition, it also disabled deep learning and blocked `TensorFlowLinearClassifier` and `TensorFlowDNN` algorithms. In addition, it also used `k-fold cross validation` to validate the model's accuracy. 
+
+THe run also had some data guardrails that it passed - `Missing features values imputation` and `High cardinality feature detection`. However it did not pass `Class balancing detection`, which Automl altered as the imbalanced data can lead to a falsely perceived positive effect of a model's accuracy because the input data can be biased towards one class.
+![](images/udacity-overview-optimize-6.png)
+![](images/udacity-overview-optimize-5.png)
 
 ## Pipeline comparison
 The accuracy delta between both approaches is negligible (0.6%), however, a better classification metric, AUC weighted, is higher for the VotingEnsemble model that AutoML's search space found. AutoML can definitely close the gap of unkown-unkowns as it's more exhaustive than tuning a predefined model's hyperparameters. Parallelizing, when compute is available, can yield faster times, which in my case was possible as I was using work resources rather than labs, which was constrained.
@@ -51,4 +58,7 @@ I know we did not delve into neural-networks for both automl and hyper parameter
 
 ## Proof of cluster clean up
 
-N/A. Used personal azure resources that I got from work. 
+Used personal azure resources that I got from work. However, did delete the cluster at the end of the notebook with the following method call: 
+```python
+compute_target.delete()
+```
